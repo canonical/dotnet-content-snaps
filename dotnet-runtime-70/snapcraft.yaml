@@ -1,0 +1,34 @@
+name: dotnet-runtime-70
+base: core20
+version: 7.0.19
+summary: Cross-Platform .NET Core Runtime.
+description: |
+  .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
+  .NET Core is a general purpose development platform maintained by Microsoft.
+
+grade: stable
+confinement: strict
+
+apps:
+  dotnet:
+    command: dotnet
+    plugs:
+      - network
+      - network-bind
+      - removable-media
+      - home
+
+slots:
+  dotnet-runtime:
+    content: dotnet-runtime-70
+    interface: content
+    read: [/]
+
+parts:
+  dotnet-runtime:
+    plugin: dump
+    source: https://download.visualstudio.microsoft.com/download/pr/09ab2389-5bab-4d45-9a91-a56ff322e83c/2f8192a98b6887c7f12b0d2dc4a06247/dotnet-runtime-7.0.19-linux-x64.tar.gz
+    source-checksum: sha512/4e556c1437a58d2325e3eeb5a5c4b718599dff206af957a80490ef2945b1a2f5114d25b808b4c9ea233cc4eb2e5ce40932bb249e198319e97f3b5cc443612e6f
+    stage-packages:
+      - libicu66
+      - liblttng-ust0

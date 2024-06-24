@@ -1,0 +1,34 @@
+name: dotnet-runtime-80
+base: core20
+version: 8.0.5
+summary: Cross-Platform .NET Core Runtime.
+description: |
+  .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
+  .NET Core is a general purpose development platform maintained by Microsoft.
+
+grade: stable
+confinement: strict
+
+apps:
+  dotnet:
+    command: dotnet
+    plugs:
+      - network
+      - network-bind
+      - removable-media
+      - home
+
+slots:
+  dotnet-runtime:
+    content: dotnet-runtime-80
+    interface: content
+    read: [/]
+
+parts:
+  dotnet-runtime:
+    plugin: dump
+    source: https://download.visualstudio.microsoft.com/download/pr/baeb5da3-4b77-465b-8816-b29f0bc3e1a9/b04b17a2aae79e5f5635a3ceffbd4645/dotnet-runtime-8.0.5-linux-x64.tar.gz
+    source-checksum: sha512/3efff49feb2e11cb5ec08dcee4e1e8ad92a4d2516b721a98b55ef2ada231cad0c91fd20b71ab5e340047fc837bd02d143449dd32f4f95288f6f659fa6c790eaa
+    stage-packages:
+      - libicu66
+      - liblttng-ust0

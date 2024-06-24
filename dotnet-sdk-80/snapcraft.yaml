@@ -1,0 +1,30 @@
+name: dotnet-sdk-80
+base: core22
+version: 8.0.105
+summary: .NET 8 SDK
+description: |
+  The .NET SDK is a set of libraries and tools that developers use to create
+  .NET applications and libraries.
+
+grade: stable
+confinement: strict
+
+slots:
+  dotnet-sdk:
+    interface: content
+    content: dotnet-sdk-80
+    source:
+      read:
+        - $SNAP/usr/lib/dotnet
+
+parts:
+  dotnet-sdk:
+    plugin: nil
+    stage-packages:
+      - dotnet-sdk-8.0
+
+lint:
+  ignore:
+    - library:
+      - usr/lib/x86_64-linux-gnu/libicu*
+      - usr/lib/x86_64-linux-gnu/liblttng-ust-*

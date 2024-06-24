@@ -1,0 +1,34 @@
+name: dotnet-runtime-60
+base: core20
+version: 6.0.30
+summary: Cross-Platform .NET Core Runtime.
+description: |
+  .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
+  .NET Core is a general purpose development platform maintained by Microsoft.
+
+grade: stable
+confinement: strict
+
+apps:
+  dotnet:
+    command: dotnet
+    plugs:
+      - network
+      - network-bind
+      - removable-media
+      - home
+
+slots:
+  dotnet-runtime:
+    content: dotnet-runtime-60
+    interface: content
+    read: [/]
+
+parts:
+  dotnet-runtime:
+    plugin: dump
+    source: https://download.visualstudio.microsoft.com/download/pr/a80ab89d-9f64-47b9-bba5-907a4cdaf457/c5714a6e605ef86293a5145d8ea72f39/dotnet-runtime-6.0.30-linux-x64.tar.gz
+    source-checksum: sha512/b43200ec3a8c74475f396becd21d22c6a78a6713585837707c2a84bbb869c7e551a05c4c1c1cdba8083baebdd09bc356de5d5a833b8bc84b83421d3ecfac71ca
+    stage-packages:
+      - libicu66
+      - liblttng-ust0

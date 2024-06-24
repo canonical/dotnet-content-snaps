@@ -1,0 +1,31 @@
+name: dotnet-sdk-60
+base: core22
+version: 6.0.128
+summary: .NET 6 SDK
+description: |
+  The .NET SDK is a set of libraries and tools that developers use to create
+  .NET applications and libraries.
+
+grade: stable
+confinement: strict
+
+slots:
+  dotnet-sdk:
+    interface: content
+    content: dotnet-sdk-60
+    source:
+      read:
+        - $SNAP/usr/lib/dotnet
+
+parts:
+  dotnet-sdk:
+    plugin: nil
+    stage-packages:
+      - dotnet-sdk-6.0
+
+lint:
+  ignore:
+    - library:
+      - usr/lib/x86_64-linux-gnu/libicu*
+      - usr/lib/x86_64-linux-gnu/liblttng-ust-*
+      - usr/lib/x86_64-linux-gnu/libunwind-*
