@@ -1,0 +1,52 @@
+name: dotnet-runtime-60
+
+on:
+  push:
+    branches: main
+    paths:
+      - dotnet-runtime-60/**
+  pull_request:
+    branches: main
+
+env:
+  SNAP_NAME: dotnet-runtime-60
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      id: checkout
+    - uses: snapcore/action-build@v1
+      id: build
+      with:
+        path: ${{ env.SNAP_NAME }}
+    - uses: actions/upload-artifact@v4
+      id: upload-artifact
+      with:
+        name: ${{ env.SNAP_NAME }}
+        path: ${{ steps.build.outputs.snap }}
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - uses: actions/download-artifact@v4
+        id: download-artifact
+        with:
+          name: ${{ env.SNAP_NAME }}
+      - name: Gather filename
+        id: gather-filename
+        env:
+          ARTIFACT_PATH: ${{ steps.download-artifact.outputs.download-path }}
+        run: |
+          ls -la $ARTIFACT_PATH
+          SNAP_FILE_NAME_X64=$(ls ${ARTIFACT_PATH}/${SNAP_NAME}*amd64.snap)
+          echo "SNAP_PATH_X64=${SNAP_FILE_NAME_X64}" >> "$GITHUB_OUTPUT"
+      - uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_STORE_LOGIN }}
+        with:
+          snap: ${{ steps.gather-filename.outputs.SNAP_PATH_X64 }}
+          release: edge

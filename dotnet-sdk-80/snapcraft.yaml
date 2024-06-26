@@ -1,6 +1,6 @@
 name: dotnet-sdk-80
 base: core22
-version: 8.0.105
+adopt-info: dotnet-sdk
 summary: .NET 8 SDK
 description: |
   The .NET SDK is a set of libraries and tools that developers use to create
@@ -8,6 +8,12 @@ description: |
 
 grade: stable
 confinement: strict
+
+architectures:
+  - build-on: [amd64]
+    build-for: [amd64]
+  - build-on: [arm64]
+    build-for: [arm64]
 
 slots:
   dotnet-sdk:
@@ -20,11 +26,30 @@ slots:
 parts:
   dotnet-sdk:
     plugin: nil
+    source: .
     stage-packages:
       - dotnet-sdk-8.0
+    override-stage: |
+      craftctl default
+
+      if [ "${CRAFT_ARCH_BUILD_FOR}" = "amd64" ]; then
+        DOTNET_SDK_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/x86_64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --version)
+      elif [ "${CRAFT_ARCH_BUILD_FOR}" = "arm64" ]; then
+        DOTNET_SDK_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/aarch64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --version)
+      else
+        echo "Unknown architecture (${CRAFT_ARCH_BUILD_FOR})"
+        exit 1
+      fi
+
+      if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
+        craftctl set version="${DOTNET_SDK_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
+      else
+        craftctl set version="${DOTNET_SDK_VERSION}"
+      fi
 
 lint:
   ignore:
     - library:
-      - usr/lib/x86_64-linux-gnu/libicu*
-      - usr/lib/x86_64-linux-gnu/liblttng-ust-*
+      - usr/lib/**/libicu*
+      - usr/lib/**/liblttng-ust-*
+      - usr/lib/**/libunwind-*

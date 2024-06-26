@@ -1,0 +1,65 @@
+name: dotnet-sdk-60
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+
+env:
+  SNAP_NAME: dotnet-sdk-60
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - [self-hosted, large, jammy, X64]
+          - [self-hosted, large, jammy, ARM64]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+      id: checkout
+    - id: prepare-sha
+      run: git show -s --format=%h > ${SNAP_NAME}/GIT_SHA
+    - uses: snapcore/action-build@v1
+      id: build
+      with:
+        path: ${{ env.SNAP_NAME }}
+    - id: get-arch
+      run: echo "DPKG_ARCH=$(dpkg --print-architecture)" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@v4
+      id: upload-artifact
+      with:
+        # e.g. dotnet-sdk-60-amd64
+        name: ${{ env.SNAP_NAME }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
+        path: ${{ steps.build.outputs.snap }}
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ github.event_name == 'push' }}
+    strategy:
+      matrix:
+        artifact-name:
+          - dotnet-sdk-60-amd64
+          - dotnet-sdk-60-arm64
+    steps:
+      - uses: actions/download-artifact@v4
+        id: download-artifact
+        with:
+          name: ${{ matrix.artifact-name }}
+      - name: Gather filename
+        id: gather-filename
+        env:
+          ARTIFACT_PATH: ${{ steps.download-artifact.outputs.download-path }}
+        run: |
+          ls -la $ARTIFACT_PATH
+          SNAP_FILE_NAME=$(ls ${ARTIFACT_PATH}/${SNAP_NAME}*.snap)
+          echo "SNAP_PATH=${SNAP_FILE_NAME}" >> "$GITHUB_OUTPUT"
+      - uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_STORE_LOGIN }}
+        with:
+          snap: ${{ steps.gather-filename.outputs.SNAP_PATH }}
+          release: edge
