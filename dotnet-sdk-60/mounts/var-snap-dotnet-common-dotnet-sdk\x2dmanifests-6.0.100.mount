@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-sdk-manifests
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/sdk-manifests/6.0.100
+Where=/var/snap/dotnet/common/dotnet/sdk-manifests/6.0.100
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

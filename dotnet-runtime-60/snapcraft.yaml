@@ -1,6 +1,6 @@
 name: dotnet-runtime-60
 base: core20
-version: 6.0.30
+version: 6.0.32
 summary: Cross-Platform .NET Core Runtime.
 description: |
   .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
@@ -27,8 +27,28 @@ slots:
 parts:
   dotnet-runtime:
     plugin: dump
-    source: https://download.visualstudio.microsoft.com/download/pr/a80ab89d-9f64-47b9-bba5-907a4cdaf457/c5714a6e605ef86293a5145d8ea72f39/dotnet-runtime-6.0.30-linux-x64.tar.gz
-    source-checksum: sha512/b43200ec3a8c74475f396becd21d22c6a78a6713585837707c2a84bbb869c7e551a05c4c1c1cdba8083baebdd09bc356de5d5a833b8bc84b83421d3ecfac71ca
+    source: https://download.visualstudio.microsoft.com/download/pr/37d9269f-d651-4248-beae-ccfbf4dc34fc/17809ba306015df6406cf4338b5cc576/dotnet-runtime-6.0.32-linux-x64.tar.gz
+    source-checksum: sha512/9babfe66f4a4261dd454f3220899af0a19532ab93575b581cec838f1c5f130d98b6fb1aaae5ee8e5b2e70deb55b619a0d55347f014ace72cb84b78d61faf0a59
     stage-packages:
       - libicu66
       - liblttng-ust0
+  
+  mounts:
+    plugin: dump
+    after: 
+      - dotnet-runtime
+    source: .
+    override-build: |
+      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/shared/Microsoft.NETCore.App/ | grep 6.0)
+      
+      for file in mounts/*; do
+        sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
+        sed -i "s/{SNAP}/$SNAPCRAFT_PROJECT_NAME/g" $file
+        if [[ "$file" == *"{RUNTIME_VERSION}"* ]]; then
+          new_file=$(echo "$file" | sed "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/")
+          mv "$file" "$new_file"
+          echo "Renamed '$file' to '$new_file'"
+        fi
+      done
+
+      snapcraftctl build

@@ -7,6 +7,7 @@ on:
       - dotnet-runtime-60/**
   pull_request:
     branches: main
+  workflow_dispatch:
 
 env:
   SNAP_NAME: dotnet-runtime-60
