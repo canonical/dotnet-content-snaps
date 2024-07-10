@@ -5,6 +5,7 @@ on:
     branches: main
   pull_request:
     branches: main
+  workflow_dispatch:
 
 env:
   SNAP_NAME: dotnet-sdk-80
