@@ -1,0 +1,79 @@
+name: aspnetcore-runtime-60
+base: core22
+adopt-info: aspnetcore-runtime
+summary: ASP.NET Core 6.0 Runtime.
+description: |
+  .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
+  .NET Core is a general purpose development platform maintained by Microsoft.
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: [amd64]
+    build-for: [amd64]
+  - build-on: [arm64]
+    build-for: [arm64]
+
+slots:
+  aspnetcore-runtime:
+    content: aspnetcore-runtime-60
+    interface: content
+    source:
+      read:
+        - $SNAP/usr/lib/dotnet
+
+parts:
+  aspnetcore-runtime:
+    plugin: nil
+    source: .
+    stage-packages:
+      - aspnetcore-runtime-6.0
+    override-stage: |
+      craftctl default
+
+      if [ "${CRAFT_ARCH_BUILD_FOR}" = "amd64" ]; then
+        ASPNETCORE_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/x86_64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
+          grep AspNetCore | head -n 1 | awk '{print $2}')
+      elif [ "${CRAFT_ARCH_BUILD_FOR}" = "arm64" ]; then
+        ASPNETCORE_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/aarch64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
+          grep AspNetCore | head -n 1 | awk '{print $2}')
+      else
+        echo "Unknown architecture (${CRAFT_ARCH_BUILD_FOR})"
+        exit 1
+      fi
+
+      if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
+        craftctl set version="${ASPNETCORE_RUNTIME_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
+      else
+        craftctl set version="${ASPNETCORE_RUNTIME_VERSION}"
+      fi
+
+  mounts:
+    plugin: dump
+    source: .
+    after: 
+      - aspnetcore-runtime
+    override-build: |
+      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 6.0)
+      
+      for file in mounts/*; do
+        sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
+        sed -i "s/{SNAP}/$SNAPCRAFT_PROJECT_NAME/g" $file
+        if [[ "$file" == *"{RUNTIME_VERSION}"* ]]; then
+          new_file=$(echo "$file" | sed "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/")
+          mv "$file" "$new_file"
+          echo "Renamed '$file' to '$new_file'"
+        fi
+      done
+
+      craftctl default
+    prime:
+      - mounts/
+
+lint:
+  ignore:
+    - library:
+      - usr/lib/**/libicu*
+      - usr/lib/**/liblttng-ust-*
+      - usr/lib/**/libunwind-*
