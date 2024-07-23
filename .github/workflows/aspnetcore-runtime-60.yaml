@@ -45,8 +45,8 @@ jobs:
     strategy:
       matrix:
         artifact-name:
-          - aspnetcore-runtime-80-amd64
-          - aspnetcore-runtime-80-arm64
+          - aspnetcore-runtime-60-amd64
+          - aspnetcore-runtime-60-arm64
     steps:
       - uses: actions/download-artifact@v4
         id: download-artifact
