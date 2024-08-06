@@ -28,9 +28,31 @@ jobs:
         name: ${{ env.SNAP_NAME }}
         path: ${{ steps.build.outputs.snap }}
 
-  publish:
+  test:
     runs-on: ubuntu-latest
     needs: build
+    steps:
+      - uses: actions/checkout@v4
+        id: checkout
+      - uses: actions/download-artifact@v4
+        id: download-artifact
+        with:
+          name: ${{ env.SNAP_NAME }}
+      - name: Install snap
+        id: install-snap
+        env:
+          ARTIFACT_PATH: ${{ steps.download-artifact.outputs.download-path }}
+        run: |
+          ls -la $ARTIFACT_PATH
+          SNAP_FILE_NAME_X64=$(ls ${ARTIFACT_PATH}/${SNAP_NAME}*amd64.snap)
+          sudo snap install --dangerous --devmode $SNAP_FILE_NAME_X64
+      - name: Verify .mount units
+        id: verify-mounts
+        run: sudo ./eng/test-mounts.sh "$SNAP_NAME" /snap/"$SNAP_NAME"/current
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
     if: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/download-artifact@v4
