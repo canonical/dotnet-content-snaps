@@ -36,9 +36,38 @@ jobs:
         name: ${{ env.SNAP_NAME }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
         path: ${{ steps.build.outputs.snap }}
 
+  test:
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      matrix:
+        os:
+          - [self-hosted, large, jammy, X64]
+          - [self-hosted, large, jammy, ARM64]
+    steps:
+      - uses: actions/checkout@v4
+        id: checkout
+      - id: get-arch
+        run: echo "DPKG_ARCH=$(dpkg --print-architecture)" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        id: download-artifact
+        with:
+          name: ${{ env.SNAP_NAME }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
+      - name: Install snap
+        id: install-snap
+        env:
+          ARTIFACT_PATH: ${{ steps.download-artifact.outputs.download-path }}
+        run: |
+          ls -la $ARTIFACT_PATH
+          SNAP_FILE_NAME=$(ls ${ARTIFACT_PATH}/${SNAP_NAME}*.snap)
+          sudo snap install --dangerous --devmode $SNAP_FILE_NAME
+      - name: Verify .mount units
+        id: verify-mounts
+        run: sudo ./eng/test-mounts.sh "$SNAP_NAME" /snap/"$SNAP_NAME"/current/usr/lib/dotnet
+
   publish:
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
     if: ${{ github.event_name == 'push' }}
     strategy:
       matrix:
