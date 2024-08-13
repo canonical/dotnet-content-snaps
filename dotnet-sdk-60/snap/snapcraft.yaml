@@ -9,6 +9,11 @@ description: |
 grade: stable
 confinement: strict
 
+package-repositories:
+ - type: apt
+   ppa: dotnet/snaps
+   priority: always
+
 architectures:
   - build-on: [amd64]
     build-for: [amd64]
