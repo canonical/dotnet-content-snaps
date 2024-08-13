@@ -2,7 +2,7 @@
 Description={SNAP}-shared
 
 [Mount]
-What=/snap/{SNAP}/current/shared/Microsoft.NETCore.App/{RUNTIME_VERSION}
+What=/snap/{SNAP}/current/usr/lib/dotnet/shared/Microsoft.NETCore.App/{RUNTIME_VERSION}
 Where=/var/snap/dotnet/common/dotnet/shared/Microsoft.NETCore.App/{RUNTIME_VERSION}
 Type=none
 Options=bind

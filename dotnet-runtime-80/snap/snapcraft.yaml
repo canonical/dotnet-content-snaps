@@ -1,7 +1,7 @@
 name: dotnet-runtime-80
-base: core20
-version: 8.0.7
-summary: Cross-Platform .NET Core Runtime.
+base: core22
+adopt-info: dotnet-runtime
+summary: .NET Core 8.0 Runtime.
 description: |
   .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
   .NET Core is a general purpose development platform maintained by Microsoft.
@@ -18,28 +18,61 @@ apps:
       - removable-media
       - home
 
+architectures:
+  - build-on: [amd64]
+    build-for: [amd64]
+  - build-on: [arm64]
+    build-for: [arm64]
+
 slots:
   dotnet-runtime:
     content: dotnet-runtime-80
     interface: content
-    read: [/]
+    source:
+      read:
+        - $SNAP/usr/lib/dotnet
 
 parts:
   dotnet-runtime:
-    plugin: dump
-    source: https://download.visualstudio.microsoft.com/download/pr/cf3418ca-0e14-4b76-b615-ac2f2497f8ec/2583028ea52460cb1534d929dc7970fe/dotnet-runtime-8.0.7-linux-x64.tar.gz
-    source-checksum: sha512/88e9ac34ad5ac76eec5499f2eb8d1aa35076518c842854ec1053953d34969c7bf1c5b2dbce245dbace3a18c3b8a4c79d2ef2d2ff105ce9d17cbbdbe813d8b16f
+    plugin: nil
+    source: .
     stage-packages:
-      - libicu66
-      - liblttng-ust0
+      - dotnet-runtime-8.0
+    override-stage: |
+      craftctl default
+
+      if [ "${CRAFT_ARCH_BUILD_FOR}" = "amd64" ]; then
+        DOTNET_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/x86_64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
+          grep NETCoreApp | head -n 1 | awk '{print $2}')
+      elif [ "${CRAFT_ARCH_BUILD_FOR}" = "arm64" ]; then
+        DOTNET_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/aarch64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
+          grep NETCoreApp | head -n 1 | awk '{print $2}')
+      else
+        echo "Unknown architecture (${CRAFT_ARCH_BUILD_FOR})"
+        exit 1
+      fi
+
+      if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
+        craftctl set version="${DOTNET_RUNTIME_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
+      else
+        craftctl set version="${DOTNET_RUNTIME_VERSION}"
+      fi
+    override-prime: |
+      # This is for backwards compatibility:
+      # Up until now, .NET Runtime content snaps would place the .NET directory hive
+      # in /. As the binaries are now pulled from Canonical's deb package, which installs
+      # the hive into /usr/lib/dotnet, we place a `dotnet` symlink in / so that it's
+      # still where people might expect it to be.
+      ln --symbolic usr/lib/dotnet/dotnet "${CRAFT_PRIME}"/dotnet
+      craftctl default
 
   mounts:
     plugin: dump
+    source: .
     after: 
       - dotnet-runtime
-    source: .
     override-build: |
-      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/shared/Microsoft.NETCore.App/ | grep 8.0)
+      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 8.0)
       
       for file in mounts/*; do
         sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
@@ -51,4 +84,13 @@ parts:
         fi
       done
 
-      snapcraftctl build
+      craftctl default
+    prime:
+      - mounts/
+
+lint:
+  ignore:
+    - library:
+      - usr/lib/**/libicu*
+      - usr/lib/**/liblttng-ust-*
+      - usr/lib/**/libunwind-*
