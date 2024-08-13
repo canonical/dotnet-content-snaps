@@ -6,9 +6,7 @@ IFS=$'\n\t'
 snap="$1"
 dotnet_path="$2"
 content_snap_path="/snap/$snap/current"
-
-# Test .NET output
-"$dotnet_path"/dotnet --info
+mount_destination_path="/var/snap/dotnet/common/dotnet"
 
 echo "Installing .mount units..."
 cp "$content_snap_path"/mounts/* /usr/lib/systemd/system
@@ -31,3 +29,9 @@ for unit_path in "$content_snap_path"/mounts/*.mount; do
     [[ -d $unescaped_path ]] && echo "Directory $unescaped_path exists"
     [[ $(find "$unescaped_path" -maxdepth 1 | wc --lines) -gt 1 ]] && echo "Directory $unescaped_path is not empty"
 done
+
+# Test .NET output
+cp --dereference --preserve=mode,ownership,timestamps "$dotnet_path"/dotnet "$mount_destination_path"
+cp --recursive --dereference --preserve=mode,ownership,timestamps "$dotnet_path"/host "$mount_destination_path"
+
+"$mount_destination_path"/dotnet --info
