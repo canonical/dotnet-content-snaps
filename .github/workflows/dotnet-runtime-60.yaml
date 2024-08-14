@@ -65,7 +65,7 @@ jobs:
           sudo snap install --dangerous --devmode $SNAP_FILE_NAME
       - name: Verify .mount units
         id: verify-mounts
-        run: sudo ./eng/test-mounts.sh "$SNAP_NAME" /snap/"$SNAP_NAME"/current
+        run: sudo ./eng/test-mounts.sh "$SNAP_NAME"
 
   publish:
     runs-on: ubuntu-latest
