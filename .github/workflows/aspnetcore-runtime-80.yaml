@@ -94,4 +94,4 @@ jobs:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_STORE_LOGIN }}
         with:
           snap: ${{ steps.gather-filename.outputs.SNAP_PATH }}
-          release: stable
+          release: candidate
