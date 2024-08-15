@@ -63,7 +63,7 @@ jobs:
           sudo snap install --dangerous --devmode $SNAP_FILE_NAME
       - name: Verify .mount units
         id: verify-mounts
-        run: sudo ./eng/test-mounts.sh "$SNAP_NAME" /snap/"$SNAP_NAME"/current/usr/lib/dotnet
+        run: sudo ./eng/test-mounts.sh "$SNAP_NAME"
 
   publish:
     runs-on: ubuntu-latest
@@ -92,4 +92,4 @@ jobs:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_STORE_LOGIN }}
         with:
           snap: ${{ steps.gather-filename.outputs.SNAP_PATH }}
-          release: edge
+          release: candidate

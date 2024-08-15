@@ -4,8 +4,8 @@ IFS=$'\n\t'
 
 # We take the snap name as an input parameter
 snap="$1"
-dotnet_path="$2"
 content_snap_path="/snap/$snap/current"
+dotnet_path="${content_snap_path}/usr/lib/dotnet"
 mount_destination_path="/var/snap/dotnet/common/dotnet"
 
 echo "Installing .mount units..."
