@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-library-packs
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/library-packs
+Where=/var/snap/dotnet/common/dotnet/library-packs
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target
