@@ -40,7 +40,26 @@ for unit_path in "$content_snap_path"/mounts/*.mount; do
     print_to_workflow "## $unit"
     
     echo "Starting $unit..."
+    print_to_workflow "- Starting unit \`${unit}\` :up:"
+
+    # Start the service without exiting immediately if it fails
+    set +e  # Disable 'set -e' temporarily
     systemctl start "$unit"
+    start_status=$?  # Capture the exit status of systemctl start
+    set -e  # Re-enable 'set -e' for the rest of the script
+
+    # Check if the service failed to start
+    if [[ $start_status -ne 0 ]]; then
+        print_to_workflow "- Failed to start the unit \`$unit\` :x:"
+        print_to_workflow "### Service Log (Last 50 lines)"
+        journalctl -u "$unit" -n 50 | tee "$systemctl_status_output_file" | cat
+        print_to_workflow "\`\`\`"
+        file_to_workflow "$systemctl_status_output_file"
+        print_to_workflow "\`\`\`"
+        exit 1
+    else
+        print_to_workflow "- Unit \`${unit}\` started! :ok:"
+    fi
 
     print_to_workflow "### Service Status"
     systemctl status "$unit" | tee "$systemctl_status_output_file" | cat

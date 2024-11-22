@@ -14,6 +14,9 @@ package-repositories:
    ppa: dotnet/snaps
    priority: always
 
+# The 'apps:' section was inherited from past versions of this snap.
+# Since this is a content snap, this section is not really needed, but will
+# be kept for backwards compatibility.
 apps:
   dotnet:
     command: dotnet

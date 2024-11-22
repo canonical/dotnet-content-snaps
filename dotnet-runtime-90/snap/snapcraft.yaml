@@ -1,7 +1,7 @@
-name: dotnet-runtime-60
+name: dotnet-runtime-90
 base: core22
 adopt-info: dotnet-runtime
-summary: .NET Core 6.0 Runtime.
+summary: .NET 9.0 Runtime.
 description: |
   .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
   .NET Core is a general purpose development platform maintained by Microsoft.
@@ -14,18 +14,6 @@ package-repositories:
    ppa: dotnet/snaps
    priority: always
 
-# The 'apps:' section was inherited from past versions of this snap.
-# Since this is a content snap, this section is not really needed, but will
-# be kept for backwards compatibility.
-apps:
-  dotnet:
-    command: dotnet
-    plugs:
-      - network
-      - network-bind
-      - removable-media
-      - home
-
 architectures:
   - build-on: [amd64]
     build-for: [amd64]
@@ -34,7 +22,7 @@ architectures:
 
 slots:
   dotnet-runtime:
-    content: dotnet-runtime-60
+    content: dotnet-runtime-90
     interface: content
     source:
       read:
@@ -45,7 +33,7 @@ parts:
     plugin: nil
     source: .
     stage-packages:
-      - dotnet-runtime-6.0
+      - dotnet-runtime-9.0
     override-stage: |
       craftctl default
 
@@ -65,22 +53,14 @@ parts:
       else
         craftctl set version="${DOTNET_RUNTIME_VERSION}"
       fi
-    override-prime: |
-      # This is for backwards compatibility:
-      # Up until now, .NET Runtime content snaps would place the .NET directory hive
-      # in /. As the binaries are now pulled from Canonical's deb package, which installs
-      # the hive into /usr/lib/dotnet, we place a `dotnet` symlink in / so that it's
-      # still where people might expect it to be.
-      ln --symbolic usr/lib/dotnet/dotnet "${CRAFT_PRIME}"/dotnet
-      craftctl default
-  
+
   mounts:
     plugin: dump
     source: .
     after: 
       - dotnet-runtime
     override-build: |
-      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 6.0)
+      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 9.0)
       
       for file in mounts/*; do
         sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
