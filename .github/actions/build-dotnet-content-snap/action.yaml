@@ -1,0 +1,61 @@
+name: 'Build .NET Content Snap'
+description: 'A sequence of steps to build a Canonical .NET Content Snap'
+
+inputs:
+  component:
+    description: 'The .NET component to be built (dotnet-runtime, aspnetcore-runtime, dotnet-sdk)'
+    required: true
+  major-version:
+    description: 'The .NET Major Version to build'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - id: validate-component
+      shell: bash
+      run: |
+        component="${{ inputs.component }}"
+        case "$component" in
+          dotnet-runtime|aspnetcore-runtime|dotnet-sdk)
+            echo "Valid component: $component"
+            ;;
+          *)
+            echo "Error: Invalid component. Must be one of: dotnet-runtime, aspnetcore-runtime, dotnet-sdk."
+            exit 1
+            ;;
+        esac
+    - id: validate-version
+      shell: bash
+      run: |
+        version="${{ inputs.major-version }}"
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+          echo "Error: Invalid version format. Please use major.minor format (e.g., 9.0)"
+          exit 1
+        else
+          echo "Valid version format: $version"
+          echo "dotnet-version=${version//./}" >> "$GITHUB_OUTPUT"
+        fi
+    - id: derive-snap-name
+      shell: bash
+      run: |
+        SNAP_NAME=${{ inputs.component }}-${{ steps.validate-version.outputs.dotnet-version }}
+        echo "snap-name=${SNAP_NAME}" >> "$GITHUB_OUTPUT"
+    - id: prepare-sha
+      shell: bash
+      env:
+        SNAP_NAME: ${{ steps.derive-snap-name.outputs.snap-name }}
+      run: git show -s --format=%h > ${SNAP_NAME}/GIT_SHA
+    - uses: snapcore/action-build@v1
+      id: build
+      with:
+        path: ${{ steps.derive-snap-name.outputs.snap-name }}
+    - id: get-arch
+      shell: bash
+      run: echo "DPKG_ARCH=$(dpkg --print-architecture)" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@v4
+      id: upload-artifact
+      with:
+        # e.g. dotnet-runtime-60-amd64
+        name: ${{ steps.derive-snap-name.outputs.snap-name }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
+        path: ${{ steps.build.outputs.snap }}

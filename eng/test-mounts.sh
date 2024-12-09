@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -xeuo pipefail
-IFS=$'\n\t'
 
 print_to_workflow() {
     if [[ -n ${GITHUB_STEP_SUMMARY} ]]; then
@@ -22,6 +21,11 @@ arch="$(dpkg --print-architecture)"
 mount_destination_path="/var/snap/dotnet/common/dotnet"
 # We take the snap name as an input parameter
 for snap in "$@"; do
+    if [[ "$snap" == "" ]]; then
+        echo "Skipping empty parameter..."
+        continue
+    fi
+
     content_snap_path="/snap/$snap/current"
     dotnet_path="${content_snap_path}/usr/lib/dotnet"
 
