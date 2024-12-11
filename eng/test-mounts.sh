@@ -19,6 +19,7 @@ file_to_workflow() {
 
 arch="$(dpkg --print-architecture)"
 mount_destination_path="/var/snap/dotnet/common/dotnet"
+file_comparison_params=()
 # We take the snap name as an input parameter
 for snap in "$@"; do
     if [[ "$snap" == "" ]]; then
@@ -28,6 +29,7 @@ for snap in "$@"; do
 
     content_snap_path="/snap/$snap/current"
     dotnet_path="${content_snap_path}/usr/lib/dotnet"
+    file_comparison_params+=("$dotnet_path")
 
     print_to_workflow "# $snap-$arch"
 
@@ -35,7 +37,7 @@ for snap in "$@"; do
     cp "$content_snap_path"/mounts/* /usr/lib/systemd/system
     systemctl daemon-reload
 
-    systemctl_status_output_file=$(mktemp)
+    systemctl_status_output_file="$(mktemp)"
     for unit_path in "$content_snap_path"/mounts/*.mount; do
         failed="no"
         # Remove the preceding path from the unit name
@@ -56,7 +58,7 @@ for snap in "$@"; do
         if [[ $start_status -ne 0 ]]; then
             print_to_workflow "- Failed to start the unit \`$unit\` :x:"
             print_to_workflow "### Service Log (Last 50 lines)"
-            journalctl -u "$unit" -n 50 | tee "$systemctl_status_output_file" | cat
+            journalctl -u "$unit" -n 50 | tee "$systemctl_status_output_file"
             print_to_workflow "\`\`\`"
             file_to_workflow "$systemctl_status_output_file"
             print_to_workflow "\`\`\`"
@@ -66,7 +68,7 @@ for snap in "$@"; do
         fi
 
         print_to_workflow "### Service Status"
-        systemctl status "$unit" | tee "$systemctl_status_output_file" | cat
+        systemctl status "$unit" | tee "$systemctl_status_output_file"
         print_to_workflow "\`\`\`"
         file_to_workflow "$systemctl_status_output_file"
         print_to_workflow "\`\`\`"
@@ -102,15 +104,50 @@ for snap in "$@"; do
     done
 done
 
-# Test .NET output
 find "$dotnet_path" -maxdepth 1 -type f -exec cp {} "$mount_destination_path" \;
 find "$dotnet_path" -maxdepth 1 -type d -name host -exec cp --recursive --dereference \
     --preserve=mode,ownership,timestamps {} "$mount_destination_path" \;
+mkdir --parents "$mount_destination_path"/packs
+if [ -d "$dotnet_path"/packs/NETStandard.Library.Ref ]; then
+    cp --recursive --dereference --preserve=mode,ownership,timestamps \
+        "$dotnet_path"/packs/NETStandard.Library.Ref "$mount_destination_path"/packs
+fi
 
+# Compare content snap /usr/lib/dotnet with $SNAP_COMMON/dotnet
+set +e
+print_to_workflow "## File Comparer"
+print_to_workflow "\`\`\`"
+print_to_workflow "Origings:"
+for param in "${file_comparison_params[@]}"; do
+    print_to_workflow "- ${param}"
+done
+print_to_workflow "Destination:"
+print_to_workflow "- $mount_destination_path"
+print_to_workflow "\`\`\`"
+
+file_comparer_output_file="$(mktemp)"
+python3 eng/file-comparer.py "${file_comparison_params[@]}" \
+    "$mount_destination_path" 2>&1 | tee "$file_comparer_output_file"
+comparer_status=$?  # Capture the exit status of the file comparer
+set -e  # Re-enable 'set -e' for the rest of the script
+
+# Check if the service failed to start
+if [[ $comparer_status -ne 0 ]]; then
+    print_to_workflow "- File comparison failed :x:"
+    print_to_workflow "### Output"
+    print_to_workflow "\`\`\`"
+    file_to_workflow "$file_comparer_output_file"
+    print_to_workflow "\`\`\`"
+    exit 1
+else
+    print_to_workflow "- File comparison OK! :ok:"
+fi
+
+# Test .NET output
 print_to_workflow "## \`dotnet --info\`"
 
 dotnet_info_tmp_file="$(mktemp)"
-"$mount_destination_path"/dotnet --info | tee "$dotnet_info_tmp_file" | cat
+"$mount_destination_path"/dotnet --info | tee "$dotnet_info_tmp_file"
 
 print_to_workflow "\`\`\`"
 file_to_workflow "$dotnet_info_tmp_file"
