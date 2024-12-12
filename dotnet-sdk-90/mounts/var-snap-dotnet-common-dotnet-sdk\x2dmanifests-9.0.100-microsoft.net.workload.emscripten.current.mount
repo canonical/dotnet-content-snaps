@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-sdk-manifests-microsoft.net.workload.emscripten.current
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/sdk-manifests/9.0.100/microsoft.net.workload.emscripten.current
+Where=/var/snap/dotnet/common/dotnet/sdk-manifests/9.0.100/microsoft.net.workload.emscripten.current
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

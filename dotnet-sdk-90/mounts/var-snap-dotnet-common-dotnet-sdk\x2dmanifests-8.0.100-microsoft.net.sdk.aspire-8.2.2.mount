@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-sdk-manifests-microsoft.net.sdk.aspire-8.2.2
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/sdk-manifests/8.0.100/microsoft.net.sdk.aspire/8.2.2
+Where=/var/snap/dotnet/common/dotnet/sdk-manifests/8.0.100/microsoft.net.sdk.aspire/8.2.2
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target
