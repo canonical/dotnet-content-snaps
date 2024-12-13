@@ -131,7 +131,7 @@ python3 eng/file-comparer.py "${file_comparison_params[@]}" \
 comparer_status=$?  # Capture the exit status of the file comparer
 set -e  # Re-enable 'set -e' for the rest of the script
 
-# Check if the service failed to start
+# Check if the file comparison failed
 if [[ $comparer_status -ne 0 ]]; then
     print_to_workflow "- File comparison failed :x:"
     print_to_workflow "### Output"
