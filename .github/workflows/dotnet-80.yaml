@@ -15,7 +15,7 @@ jobs:
   build:
     uses: ./.github/workflows/template-build.yaml
     with:
-      major-version: '8.0'
+      version: '8.0'
       build-dotnet-runtime: true
       build-aspnetcore-runtime: true
       build-dotnet-sdk: true
@@ -23,7 +23,7 @@ jobs:
     uses: ./.github/workflows/template-test.yaml
     needs: build
     with:
-      major-version: '8.0'
+      version: '8.0'
       test-dotnet-runtime: true
       test-aspnetcore-runtime: true
       test-dotnet-sdk: true
@@ -32,7 +32,7 @@ jobs:
     needs: test
     if: ${{ contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && github.ref_name == 'main' }}
     with:
-      major-version: '8.0'
+      version: '8.0'
       publish-dotnet-runtime: true
       publish-aspnetcore-runtime: true
       publish-dotnet-sdk: true

@@ -3,7 +3,7 @@ name: Publish .NET Content Snaps
 on:
   workflow_call:
     inputs:
-      major-version:
+      version:
         required: true
         type: string
       publish-dotnet-runtime:
@@ -30,7 +30,7 @@ jobs:
         id: generate-matrix
         shell: bash
         env:
-          MAJOR_VERSION: ${{ inputs.major-version }}
+          MAJOR_VERSION: ${{ inputs.version }}
         run: |
           MAJOR_VERSION_FORMATTED=${MAJOR_VERSION//./}
 

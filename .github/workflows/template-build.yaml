@@ -3,7 +3,7 @@ name: Build .NET Content Snaps
 on:
   workflow_call:
     inputs:
-      major-version:
+      version:
         required: true
         type: string
       build-dotnet-runtime:
@@ -32,7 +32,7 @@ jobs:
       uses: ./.github/actions/build-dotnet-content-snap
       with:
         component: 'dotnet-runtime'
-        major-version: ${{ inputs.major-version }}
+        version: ${{ inputs.version }}
 
   build-aspnetcore-runtime:
     strategy:
@@ -49,7 +49,7 @@ jobs:
       uses: ./.github/actions/build-dotnet-content-snap
       with:
         component: 'aspnetcore-runtime'
-        major-version: ${{ inputs.major-version }}
+        version: ${{ inputs.version }}
 
   build-dotnet-sdk:
     strategy:
@@ -66,4 +66,4 @@ jobs:
       uses: ./.github/actions/build-dotnet-content-snap
       with:
         component: 'dotnet-sdk'
-        major-version: ${{ inputs.major-version }}
+        version: ${{ inputs.version }}

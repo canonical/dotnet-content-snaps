@@ -3,7 +3,7 @@ name: Test .NET Content Snaps
 on:
   workflow_call:
     inputs:
-      major-version:
+      version:
         required: true
         type: string
       test-dotnet-runtime:
@@ -31,7 +31,7 @@ jobs:
         id: test
         uses: ./.github/actions/test-dotnet-content-snaps
         with:
-          major-version: ${{ inputs.major-version }}
+          version: ${{ inputs.version }}
           dotnet-runtime: ${{ inputs.test-dotnet-runtime }}
           aspnetcore-runtime: ${{ inputs.test-aspnetcore-runtime }}
           dotnet-sdk: ${{ inputs.test-dotnet-sdk }}

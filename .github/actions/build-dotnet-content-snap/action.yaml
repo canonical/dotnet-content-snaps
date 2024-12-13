@@ -5,7 +5,7 @@ inputs:
   component:
     description: 'The .NET component to be built (dotnet-runtime, aspnetcore-runtime, dotnet-sdk)'
     required: true
-  major-version:
+  version:
     description: 'The .NET Major Version to build'
     required: true
 
@@ -28,7 +28,7 @@ runs:
     - id: validate-version
       shell: bash
       run: |
-        version="${{ inputs.major-version }}"
+        version="${{ inputs.version }}"
         if [[ ! "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
           echo "Error: Invalid version format. Please use major.minor format (e.g., 9.0)"
           exit 1

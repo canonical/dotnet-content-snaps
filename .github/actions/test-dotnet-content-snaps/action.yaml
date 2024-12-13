@@ -2,7 +2,7 @@ name: 'Test .NET Content Snaps'
 description: 'A sequence of steps to test the Canonical .NET Content Snaps'
 
 inputs:
-  major-version:
+  version:
     description: 'The .NET Major Version to test'
     required: true
   dotnet-runtime:
@@ -27,7 +27,7 @@ runs:
     - id: check-version
       shell: bash
       run: |
-        version="${{ inputs.major-version }}"
+        version="${{ inputs.version }}"
         if [[ ! "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
           echo "Error: Invalid version format. Please use major.minor format (e.g., 9.0)"
           exit 1
