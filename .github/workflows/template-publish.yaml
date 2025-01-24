@@ -1,0 +1,81 @@
+name: Publish .NET Content Snaps
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      publish-dotnet-runtime:
+        required: true
+        type: boolean
+      publish-aspnetcore-runtime:
+        required: true
+        type: boolean
+      publish-dotnet-sdk:
+        required: true
+        type: boolean
+    secrets:
+      snap-store-token:
+        required: true
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      artifacts: ${{ steps.generate-matrix.outputs.artifacts }}
+      architectures: ${{ steps.generate-matrix.outputs.architectures }}
+    steps:
+      - name: Generate Dynamic Artifacts Matrix
+        id: generate-matrix
+        shell: bash
+        env:
+          MAJOR_VERSION: ${{ inputs.version }}
+        run: |
+          MAJOR_VERSION_FORMATTED=${MAJOR_VERSION//./}
+
+          ARTIFACTS=""
+          ARCHITECTURES="amd64 arm64"
+
+          if [[ ${{ inputs.publish-dotnet-runtime }} == 'true' ]]; then
+            ARTIFACTS="${ARTIFACTS} dotnet-runtime-${MAJOR_VERSION_FORMATTED}"
+          fi
+          if [[ ${{ inputs.publish-aspnetcore-runtime }} == 'true' ]]; then
+            ARTIFACTS="${ARTIFACTS} aspnetcore-runtime-${MAJOR_VERSION_FORMATTED}"
+          fi
+          if [[ ${{ inputs.publish-dotnet-sdk }} == 'true' ]]; then
+            ARTIFACTS="${ARTIFACTS} dotnet-sdk-${MAJOR_VERSION_FORMATTED}"
+          fi
+
+          # First gsub: removes leading and trailing whitespaces
+          # Second gsub: replaces any number of subsequent whitespaces with only one whitespace
+          ARTIFACTS_ARRAY=$(echo "$ARTIFACTS" | jq --raw-input --compact-output \
+            'gsub("^\\s+|\\s+$"; "") | gsub("\\s+"; " ") | split(" ")')
+          ARCHITECTURES_ARRAY=$(echo "$ARCHITECTURES" | jq --raw-input --compact-output \
+            'gsub("^\\s+|\\s+$"; "") | gsub("\\s+"; " ") | split(" ")')
+
+          echo "artifacts=$ARTIFACTS_ARRAY" >> $GITHUB_OUTPUT
+          echo "architectures=$ARCHITECTURES_ARRAY" >> $GITHUB_OUTPUT
+
+  publish:
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        artifact: ${{ fromJson(needs.generate-matrix.outputs.artifacts) }}
+        architecture: ${{ fromJson(needs.generate-matrix.outputs.architectures) }}
+    steps:
+      - uses: actions/checkout@v4
+        id: checkout
+      - name: Print matrix
+        shell: bash
+        run: |
+          echo "Artifact: ${{ matrix.artifact }}"
+          echo "Architecture: ${{ matrix.architecture }}"
+      - name: Publish Content Snaps
+        id: publish
+        uses: ./.github/actions/publish-dotnet-content-snaps
+        with:
+          artifact-name: ${{ matrix.artifact }}
+          architecture: ${{ matrix.architecture }}
+          store-token: ${{ secrets.snap-store-token }}

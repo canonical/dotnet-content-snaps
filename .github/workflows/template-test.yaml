@@ -1,0 +1,37 @@
+name: Test .NET Content Snaps
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      test-dotnet-runtime:
+        required: true
+        type: boolean
+      test-aspnetcore-runtime:
+        required: true
+        type: boolean
+      test-dotnet-sdk:
+        required: true
+        type: boolean
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - [self-hosted, large, jammy, X64]
+          - [self-hosted, large, jammy, ARM64]
+    steps:
+      - uses: actions/checkout@v4
+        id: checkout
+      - name: Test Content Snaps
+        id: test
+        uses: ./.github/actions/test-dotnet-content-snaps
+        with:
+          version: ${{ inputs.version }}
+          dotnet-runtime: ${{ inputs.test-dotnet-runtime }}
+          aspnetcore-runtime: ${{ inputs.test-aspnetcore-runtime }}
+          dotnet-sdk: ${{ inputs.test-dotnet-sdk }}

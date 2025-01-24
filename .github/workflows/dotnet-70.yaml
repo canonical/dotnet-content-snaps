@@ -1,0 +1,38 @@
+name: build-dotnet-70
+
+on:
+  push:
+    branches: main
+    paths:
+      - dotnet-runtime-70/**
+  pull_request:
+    branches: main
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/template-build.yaml
+    with:
+      version: '7.0'
+      build-dotnet-runtime: true
+      build-aspnetcore-runtime: false
+      build-dotnet-sdk: false
+  test:
+    uses: ./.github/workflows/template-test.yaml
+    needs: build
+    with:
+      version: '7.0'
+      test-dotnet-runtime: true
+      test-aspnetcore-runtime: false
+      test-dotnet-sdk: false
+  publish:
+    uses: ./.github/workflows/template-publish.yaml
+    needs: test
+    if: ${{ contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && github.ref_name == 'main' }}
+    with:
+      version: '7.0'
+      publish-dotnet-runtime: true
+      publish-aspnetcore-runtime: false
+      publish-dotnet-sdk: false
+    secrets:
+      snap-store-token: ${{ secrets.SNAP_STORE_LOGIN }}

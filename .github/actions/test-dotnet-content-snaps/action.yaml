@@ -1,0 +1,104 @@
+name: 'Test .NET Content Snaps'
+description: 'A sequence of steps to test the Canonical .NET Content Snaps'
+
+inputs:
+  version:
+    description: 'The .NET Major Version to test'
+    required: true
+  dotnet-runtime:
+    description: 'Should test the .NET Runtime Content Snap'
+    required: false
+    default: 'false'
+  aspnetcore-runtime:
+    description: 'Should test the ASP.NET Core Runtime Content Snap'
+    required: false
+    default: 'false'
+  dotnet-sdk:
+    description: 'Should test the .NET SDK Content Snap'
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+  steps:
+    - id: get-arch
+      shell: bash
+      run: echo "DPKG_ARCH=$(dpkg --print-architecture)" >> "$GITHUB_OUTPUT"
+    - id: check-version
+      shell: bash
+      run: |
+        version="${{ inputs.version }}"
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+          echo "Error: Invalid version format. Please use major.minor format (e.g., 9.0)"
+          exit 1
+        else
+          echo "Valid version format: $version"
+          echo "dotnet-version=${version//./}" >> "$GITHUB_OUTPUT"
+        fi
+    - id: derive-snap-name
+      shell: bash
+      run: |
+        if [[ ${{ inputs.dotnet-runtime }} == 'true' ]]; then
+          DOTNET_RUNTIME_SNAP_NAME=dotnet-runtime-${{ steps.check-version.outputs.dotnet-version }}
+          echo "dotnet-runtime-snap-name=${DOTNET_RUNTIME_SNAP_NAME}" >> "$GITHUB_OUTPUT"
+        fi
+        if [[ ${{ inputs.aspnetcore-runtime }} == 'true' ]]; then
+          ASPNETCORE_RUNTIME_SNAP_NAME=aspnetcore-runtime-${{ steps.check-version.outputs.dotnet-version }}
+          echo "aspnetcore-runtime-snap-name=${ASPNETCORE_RUNTIME_SNAP_NAME}" >> "$GITHUB_OUTPUT"
+        fi
+        if [[ ${{ inputs.dotnet-sdk }} == 'true' ]]; then
+          DOTNET_SDK_SNAP_NAME=dotnet-sdk-${{ steps.check-version.outputs.dotnet-version }}
+          echo "dotnet-sdk-snap-name=${DOTNET_SDK_SNAP_NAME}" >> "$GITHUB_OUTPUT"
+        fi
+    - uses: actions/download-artifact@v4
+      id: download-dotnet-runtime
+      if: ${{ inputs.dotnet-runtime == 'true' }}
+      env:
+        DOTNET_RUNTIME_SNAP_NAME: ${{ steps.derive-snap-name.outputs.dotnet-runtime-snap-name }}
+      with:
+        name: ${{ env.DOTNET_RUNTIME_SNAP_NAME }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
+    - uses: actions/download-artifact@v4
+      id: download-aspnetcore-runtime
+      if: ${{ inputs.aspnetcore-runtime == 'true' }}
+      env:
+        ASPNETCORE_RUNTIME_SNAP_NAME: ${{ steps.derive-snap-name.outputs.aspnetcore-runtime-snap-name }}
+      with:
+        name: ${{ env.ASPNETCORE_RUNTIME_SNAP_NAME }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
+    - uses: actions/download-artifact@v4
+      id: download-dotnet-sdk
+      if: ${{ inputs.dotnet-sdk == 'true' }}
+      env:
+        DOTNET_SDK_SNAP_NAME: ${{ steps.derive-snap-name.outputs.dotnet-sdk-snap-name }}
+      with:
+        name: ${{ env.DOTNET_SDK_SNAP_NAME }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
+    - name: Install snaps
+      id: install-snaps
+      shell: bash
+      env:
+        DOTNET_RUNTIME_ARTIFACT_PATH: ${{ steps.download-dotnet-runtime.outputs.download-path }}
+        DOTNET_RUNTIME_SNAP_NAME: ${{ steps.derive-snap-name.outputs.dotnet-runtime-snap-name }}
+        ASPNETCORE_RUNTIME_ARTIFACT_PATH: ${{ steps.download-aspnetcore-runtime.outputs.download-path }}
+        ASPNETCORE_RUNTIME_SNAP_NAME: ${{ steps.derive-snap-name.outputs.aspnetcore-runtime-snap-name }}
+        DOTNET_SDK_ARTIFACT_PATH: ${{ steps.download-dotnet-sdk.outputs.download-path }}
+        DOTNET_SDK_SNAP_NAME: ${{ steps.derive-snap-name.outputs.dotnet-sdk-snap-name }}
+      run: |
+        if [[ ${{ inputs.dotnet-runtime }} == 'true' ]]; then
+          ls -la ${DOTNET_RUNTIME_ARTIFACT_PATH}
+          sudo snap install --dangerous --devmode ${DOTNET_RUNTIME_ARTIFACT_PATH}/${DOTNET_RUNTIME_SNAP_NAME}*.snap
+        fi
+        if [[ ${{ inputs.aspnetcore-runtime }} == 'true' ]]; then
+          ls -la ${ASPNETCORE_RUNTIME_ARTIFACT_PATH}
+          sudo snap install --dangerous --devmode ${ASPNETCORE_RUNTIME_ARTIFACT_PATH}/${ASPNETCORE_RUNTIME_SNAP_NAME}*.snap
+        fi
+        if [[ ${{ inputs.dotnet-sdk }} == 'true' ]]; then
+          ls -la ${DOTNET_SDK_ARTIFACT_PATH}
+          sudo snap install --dangerous --devmode ${DOTNET_SDK_ARTIFACT_PATH}/${DOTNET_SDK_SNAP_NAME}*.snap
+        fi
+    - name: Verify .mount units
+      id: verify-mounts
+      shell: bash
+      env:
+        DOTNET_RUNTIME_SNAP_NAME: ${{ steps.derive-snap-name.outputs.dotnet-runtime-snap-name }}
+        ASPNETCORE_RUNTIME_SNAP_NAME: ${{ steps.derive-snap-name.outputs.aspnetcore-runtime-snap-name }}
+        DOTNET_SDK_SNAP_NAME: ${{ steps.derive-snap-name.outputs.dotnet-sdk-snap-name }}
+      run: sudo --preserve-env=GITHUB_STEP_SUMMARY ./eng/test-mounts.sh "$DOTNET_RUNTIME_SNAP_NAME" "$ASPNETCORE_RUNTIME_SNAP_NAME" "$DOTNET_SDK_SNAP_NAME"

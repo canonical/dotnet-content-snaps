@@ -1,0 +1,40 @@
+name: build-dotnet-60
+
+on:
+  push:
+    branches: main
+    paths:
+      - dotnet-runtime-60/**
+      - aspnetcore-runtime-60/**
+      - dotnet-sdk-60/**
+  pull_request:
+    branches: main
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/template-build.yaml
+    with:
+      version: '6.0'
+      build-dotnet-runtime: true
+      build-aspnetcore-runtime: true
+      build-dotnet-sdk: true
+  test:
+    uses: ./.github/workflows/template-test.yaml
+    needs: build
+    with:
+      version: '6.0'
+      test-dotnet-runtime: true
+      test-aspnetcore-runtime: true
+      test-dotnet-sdk: true
+  publish:
+    uses: ./.github/workflows/template-publish.yaml
+    needs: test
+    if: ${{ contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && github.ref_name == 'main' }}
+    with:
+      version: '6.0'
+      publish-dotnet-runtime: true
+      publish-aspnetcore-runtime: true
+      publish-dotnet-sdk: true
+    secrets:
+      snap-store-token: ${{ secrets.SNAP_STORE_LOGIN }}

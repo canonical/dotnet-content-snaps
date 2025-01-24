@@ -1,0 +1,69 @@
+name: Build .NET Content Snaps
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      build-dotnet-runtime:
+        required: true
+        type: boolean
+      build-aspnetcore-runtime:
+        required: true
+        type: boolean
+      build-dotnet-sdk:
+        required: true
+        type: boolean
+
+jobs:
+  build-dotnet-runtime:
+    strategy:
+      matrix:
+        os:
+          - [self-hosted, large, jammy, X64]
+          - [self-hosted, large, jammy, ARM64]
+    runs-on: ${{ matrix.os }}
+    if: ${{ inputs.build-dotnet-runtime }}
+    steps:
+    - uses: actions/checkout@v4
+      id: checkout
+    - name: Build .NET Runtime Content Snap
+      uses: ./.github/actions/build-dotnet-content-snap
+      with:
+        component: 'dotnet-runtime'
+        version: ${{ inputs.version }}
+
+  build-aspnetcore-runtime:
+    strategy:
+      matrix:
+        os:
+          - [self-hosted, large, jammy, X64]
+          - [self-hosted, large, jammy, ARM64]
+    runs-on: ${{ matrix.os }}
+    if: ${{ inputs.build-aspnetcore-runtime }}
+    steps:
+    - uses: actions/checkout@v4
+      id: checkout
+    - name: Build ASP.NET Core Runtime Content Snap
+      uses: ./.github/actions/build-dotnet-content-snap
+      with:
+        component: 'aspnetcore-runtime'
+        version: ${{ inputs.version }}
+
+  build-dotnet-sdk:
+    strategy:
+      matrix:
+        os:
+          - [self-hosted, large, jammy, X64]
+          - [self-hosted, large, jammy, ARM64]
+    runs-on: ${{ matrix.os }}
+    if: ${{ inputs.build-dotnet-sdk }}
+    steps:
+    - uses: actions/checkout@v4
+      id: checkout
+    - name: Build .NET SDK Content Snap
+      uses: ./.github/actions/build-dotnet-content-snap
+      with:
+        component: 'dotnet-sdk'
+        version: ${{ inputs.version }}
