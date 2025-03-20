@@ -45,7 +45,7 @@ runs:
       shell: bash
       env:
         SNAP_NAME: ${{ steps.derive-snap-name.outputs.snap-name }}
-      run: git show -s --format=%h > ${SNAP_NAME}/GIT_SHA
+      run: git show -s --format=%h > snaps/${SNAP_NAME}/GIT_SHA
     - uses: snapcore/action-build@v1
       id: build
       with:
