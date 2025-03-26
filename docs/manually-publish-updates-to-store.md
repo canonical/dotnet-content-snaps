@@ -7,7 +7,7 @@ When a new .NET monthly update ships and there are no changes to the content in 
 The content snaps are built using packages from the [`~dotnet/snaps`](https://launchpad.net/~dotnet/+archive/ubuntu/snaps) Launchpad PPA. For the new builds to have access to the new packages, copy them to the PPA using the following command:
 
 ```
-$ copy-package --from $FROM --suite $FROM_SUITE --to ~dotnet/ubuntu/snaps --to-suite jammy --include-binaries $DOTNET_PKG
+copy-package --from $FROM --suite $FROM_SUITE --to ~dotnet/ubuntu/snaps --to-suite jammy --include-binaries $DOTNET_PKG
 ```
 
 Where:
@@ -17,6 +17,9 @@ Where:
 
 > [!IMPORTANT]
 > The content snaps are built on top of the `core22` base snap, so make sure to always use packages that target the Jammy release.
+
+> [!NOTE]
+> The `copy-package` command is provided by the [ubuntu-archive-tools](https://code.launchpad.net/~ubuntu-archive/ubuntu-archive-tools/+git/ubuntu-archive-tools) repository.
 
 Please, wait the copied packages to be published by the Launchpad publisher before proceeding.
 
