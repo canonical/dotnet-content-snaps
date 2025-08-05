@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+# FIXME: Uncomment the following lines after content snap is available in the .NET installer
+# if [ -e "$SNAP_COMMON"/dotnet-installer ]; then
+#     touch "$SNAP_COMMON"/dotnet-installer-update-mounts
+# fi
