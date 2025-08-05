@@ -37,16 +37,9 @@ parts:
     override-stage: |
       craftctl default
 
-      if [ "${CRAFT_ARCH_BUILD_FOR}" = "amd64" ]; then
-        ASPNETCORE_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/x86_64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
-          grep AspNetCore | head -n 1 | awk '{print $2}')
-      elif [ "${CRAFT_ARCH_BUILD_FOR}" = "arm64" ]; then
-        ASPNETCORE_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/aarch64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
-          grep AspNetCore | head -n 1 | awk '{print $2}')
-      else
-        echo "Unknown architecture (${CRAFT_ARCH_BUILD_FOR})"
-        exit 1
-      fi
+      ASPNETCORE_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR} \
+        ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
+        | grep AspNetCore | head -n 1 | awk '{print $2}')
 
       if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
         craftctl set version="${ASPNETCORE_RUNTIME_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
@@ -60,7 +53,7 @@ parts:
     after: 
       - aspnetcore-runtime
     override-build: |
-      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 6.0)
+      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.AspNetCore.App/ | grep 6.0)
       
       for file in mounts/*; do
         sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file

@@ -37,14 +37,8 @@ parts:
     override-stage: |
       craftctl default
 
-      if [ "${CRAFT_ARCH_BUILD_FOR}" = "amd64" ]; then
-        DOTNET_SDK_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/x86_64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --version)
-      elif [ "${CRAFT_ARCH_BUILD_FOR}" = "arm64" ]; then
-        DOTNET_SDK_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/aarch64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --version)
-      else
-        echo "Unknown architecture (${CRAFT_ARCH_BUILD_FOR})"
-        exit 1
-      fi
+      DOTNET_SDK_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR} \
+        ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --version)
 
       if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
         craftctl set version="${DOTNET_SDK_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
