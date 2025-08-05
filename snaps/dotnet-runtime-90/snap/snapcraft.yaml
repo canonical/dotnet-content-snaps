@@ -32,6 +32,8 @@ parts:
   dotnet-runtime:
     plugin: nil
     source: .
+    build-packages:
+      - jq
     stage-packages:
       - dotnet-runtime-9.0
     override-stage: |
@@ -42,10 +44,12 @@ parts:
         | grep Microsoft.NETCore.App | head -n 1 | awk '{print $2}')
 
       if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
-        craftctl set version="${DOTNET_RUNTIME_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
-      else
-        craftctl set version="${DOTNET_RUNTIME_VERSION}"
+        jq -n --arg repo "https://github.com/canonical/dotnet-content-snaps" \
+          --arg commit "$(cat ${CRAFT_PART_SRC}/GIT_SHA)" \
+          '{repository: $repo, commit: $commit}' > ${CRAFT_PRIME}/release.json
       fi
+
+      craftctl set version="${DOTNET_RUNTIME_VERSION}"
 
   mounts:
     plugin: dump

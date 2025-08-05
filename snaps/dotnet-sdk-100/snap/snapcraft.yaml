@@ -32,6 +32,8 @@ parts:
   dotnet-sdk:
     plugin: nil
     source: .
+    build-packages:
+      - jq
     stage-packages:
       - dotnet-sdk-10.0
       - dotnet-sdk-aot-10.0
@@ -42,10 +44,12 @@ parts:
         ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --version)
 
       if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
-        craftctl set version="${DOTNET_SDK_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
-      else
-        craftctl set version="${DOTNET_SDK_VERSION}"
+        jq -n --arg repo "https://github.com/canonical/dotnet-content-snaps" \
+          --arg commit "$(cat ${CRAFT_PART_SRC}/GIT_SHA)" \
+          '{repository: $repo, commit: $commit}' > ${CRAFT_PRIME}/release.json
       fi
+
+      craftctl set version="${DOTNET_SDK_VERSION}"
 
   mounts:
     plugin: dump
