@@ -51,7 +51,7 @@ parts:
 
       DOTNET_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR} \
         ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
-        | grep NETCoreApp | head -n 1 | awk '{print $2}')
+        | grep Microsoft.NETCore.App | head -n 1 | awk '{print $2}')
 
       if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
         craftctl set version="${DOTNET_RUNTIME_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
