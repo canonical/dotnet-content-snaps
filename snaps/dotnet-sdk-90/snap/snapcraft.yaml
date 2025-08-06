@@ -59,7 +59,7 @@ parts:
     override-build: |
       RUNTIME_VERSION=$(ls ${CRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 9.0)
       SDK_VERSION=$(ls ${CRAFT_STAGE}/usr/lib/dotnet/sdk | grep 9.0)
-      
+
       if [ "${CRAFT_ARCH_BUILD_FOR}" = "amd64" ]; then
         ARCH="x64"
       elif [ "${CRAFT_ARCH_BUILD_FOR}" = "arm64" ]; then
@@ -75,12 +75,10 @@ parts:
         sed -i "s/{SNAP}/$CRAFT_PROJECT_NAME/g" $file
         sed -i "s/{ARCH}/$ARCH/g" $file
 
-        new_file_name="$(echo "$file" \
-          | sed "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/" \
-          | sed "s/{SDK_VERSION}/$SDK_VERSION/" \
-          | sed "s/{ARCH}/$ARCH/")"
+        where_path=$(cat $file | grep -e ^Where= | cut -d= -f2)
+        new_file_name="mounts/$(systemd-escape --path --suffix=mount $where_path)"
 
-        if [[ "$file" != "$new_file_name" ]]; then  
+        if [[ "$file" != "$new_file_name" ]]; then
           mv "$file" "$new_file_name"
           echo "Renamed '$file' to '$new_file_name'"
         fi

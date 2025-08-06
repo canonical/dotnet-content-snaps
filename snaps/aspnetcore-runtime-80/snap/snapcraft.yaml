@@ -54,17 +54,18 @@ parts:
   mounts:
     plugin: dump
     source: .
-    after: 
+    after:
       - aspnetcore-runtime
     override-build: |
       RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.AspNetCore.App/ | grep 8.0)
-      
+
       for file in mounts/*; do
         sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
         sed -i "s/{SNAP}/$SNAPCRAFT_PROJECT_NAME/g" $file
         if [[ "$file" == *"{RUNTIME_VERSION}"* ]]; then
-          new_file=$(echo "$file" | sed "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/")
-          mv "$file" "$new_file"
+          where_path=$(cat $file | grep -e ^Where= | cut -d= -f2)
+          new_file=$(systemd-escape --path --suffix=mount $where_path)
+          mv "$file" "mounts/$new_file"
           echo "Renamed '$file' to '$new_file'"
         fi
       done
