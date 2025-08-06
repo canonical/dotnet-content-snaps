@@ -63,7 +63,7 @@ parts:
         sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
         sed -i "s/{SNAP}/$SNAPCRAFT_PROJECT_NAME/g" $file
         if [[ "$file" == *"{RUNTIME_VERSION}"* ]]; then
-          new_file=$(echo "$file" | sed "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/")
+          new_file=$(echo "$file" | sed "s/{RUNTIME_VERSION}/${RUNTIME_VERSION//-/\\x2d}/")
           mv "$file" "$new_file"
           echo "Renamed '$file' to '$new_file'"
         fi

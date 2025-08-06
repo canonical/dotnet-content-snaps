@@ -76,9 +76,9 @@ parts:
         sed -i "s/{ARCH}/$ARCH/g" $file
 
         new_file_name="$(echo "$file" \
-          | sed "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/" \
-          | sed "s/{SDK_VERSION}/$SDK_VERSION/" \
-          | sed "s/{ARCH}/$ARCH/")"
+          | sed "s/{RUNTIME_VERSION}/${RUNTIME_VERSION//-/\\x2d}/" \
+          | sed "s/{SDK_VERSION}/${SDK_VERSION//-/\\x2d}/" \
+          | sed "s/{ARCH}/${ARCH//-/\\x2d}/")"
 
         if [[ "$file" != "$new_file_name" ]]; then  
           mv "$file" "$new_file_name"
