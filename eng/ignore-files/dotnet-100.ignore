@@ -1,0 +1,7 @@
+# NuGet packages not included due to clash in directory structure
+library-packs/Microsoft.DotNet.ILCompiler.10.0.0-preview.6.25358.103.nupkg
+library-packs/Microsoft.NET.ILLink.Tasks.10.0.0-preview.6.25358.103.nupkg
+# Aspire workload manifests conflict with the one provided by .NET 9
+sdk-manifests/8.0.100/microsoft.net.sdk.aspire/8.2.2/WorkloadManifest.Aspire.targets
+sdk-manifests/8.0.100/microsoft.net.sdk.aspire/8.2.2/WorkloadManifest.json
+sdk-manifests/8.0.100/microsoft.net.sdk.aspire/8.2.2/WorkloadManifest.targets
