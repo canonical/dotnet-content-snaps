@@ -126,7 +126,7 @@ print_to_workflow "- $mount_destination_path"
 print_to_workflow "\`\`\`"
 
 file_comparer_output_file="$(mktemp)"
-python3 eng/file-comparer.py "${file_comparison_params[@]}" \
+python3 eng/file_comparer.py "${file_comparison_params[@]}" \
     "$mount_destination_path" 2>&1 | tee "$file_comparer_output_file"
 comparer_status=$?  # Capture the exit status of the file comparer
 set -e  # Re-enable 'set -e' for the rest of the script

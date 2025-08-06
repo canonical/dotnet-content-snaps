@@ -1,3 +1,13 @@
+"""
+eng/file_comparer.py
+
+This script compares files in multiple origin directories against a destination directory.
+It checks for files that are present in the origin directories but missing in the destination,
+and also identifies any extra files that exist in the destination but not in the origin directories.
+It outputs the differences to standard error and exits with a non-zero status if discrepancies
+are found.
+"""
+
 import os
 import sys
 
@@ -54,7 +64,8 @@ def compare_directories(origins, destination):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Compare files between origin directories and a destination directory.")
+    parser = argparse.ArgumentParser(
+        description="Compare files between origin directories and a destination directory.")
     parser.add_argument("origins", nargs="+", help="List of origin directories.")
     parser.add_argument("destination", help="Destination directory.")
 
