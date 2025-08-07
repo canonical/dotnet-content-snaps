@@ -132,7 +132,7 @@ print_to_workflow "- $mount_destination_path"
 print_to_workflow "\`\`\`"
 
 file_comparer_output_file="$(mktemp)"
-ignore_file="eng/ignore-files/dotnet-${dotnet_version}.ignore"
+ignore_file="eng/file-comparer-ignore-files/dotnet-${dotnet_version}.ignore"
 
 if [[ -f "$ignore_file" ]]; then
     print_to_workflow "### Using ignore file: $ignore_file"
