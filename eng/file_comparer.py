@@ -10,6 +10,8 @@ are found.
 
 import os
 import sys
+import fnmatch
+
 
 def read_ignore_file(ignore_file):
     """Read the ignore file and return a set of patterns to ignore."""
@@ -22,13 +24,14 @@ def read_ignore_file(ignore_file):
         sys.stderr.write(f"Error reading ignore file: {e}\n")
         sys.exit(1)
 
+
 def get_relative_file_list(directory, ignore_patterns=None):
     """
     Get a sorted list of all files in a directory with paths relative to the directory.
 
     Args:
         directory (str): The directory to scan.
-        ignore_patterns (set): Set of file patterns to ignore.
+        ignore_patterns (set): Set of glob patterns to ignore. Supports * wildcards.
     """
     file_list = []
     ignore_patterns = ignore_patterns or set()
@@ -36,9 +39,11 @@ def get_relative_file_list(directory, ignore_patterns=None):
     for root, _, files in os.walk(directory):
         for file in files:
             relative_path = os.path.relpath(os.path.join(root, file), directory)
-            if not any(pattern in relative_path for pattern in ignore_patterns):
+            # Use fnmatch to support glob patterns like *.nupkg
+            if not any(fnmatch.fnmatch(relative_path, pattern) for pattern in ignore_patterns):
                 file_list.append(relative_path)
     return sorted(file_list)
+
 
 def compare_directories(origins, destination, ignore_file=None):
     """
@@ -84,6 +89,7 @@ def compare_directories(origins, destination, ignore_file=None):
     else:
         print("No differences found. Directories are in sync.")
         sys.exit(0)
+
 
 if __name__ == "__main__":
     import argparse
