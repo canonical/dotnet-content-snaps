@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-sdk-manifests-microsoft.net.workload.mono.toolchain.net6
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/sdk-manifests/10.0.100/microsoft.net.workload.mono.toolchain.net6
+Where=/var/snap/dotnet/common/dotnet/sdk-manifests/10.0.100/microsoft.net.workload.mono.toolchain.net6
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

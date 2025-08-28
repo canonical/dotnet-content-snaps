@@ -1,10 +1,10 @@
-name: dotnet-runtime-90
+name: dotnet-runtime-100
 base: core22
 adopt-info: dotnet-runtime
-summary: .NET 9.0 Runtime.
+summary: .NET 10.0 Runtime.
 description: |
-  .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
-  .NET Core is a general purpose development platform maintained by Microsoft.
+  .NET runtimes and libraries which are optimized for running .NET apps in production. See https://dot.net/core.
+  .NET is a general purpose development platform maintained by Microsoft.
 
 grade: stable
 confinement: strict
@@ -22,7 +22,7 @@ architectures:
 
 slots:
   dotnet-runtime:
-    content: dotnet-runtime-90
+    content: dotnet-runtime-100
     interface: content
     source:
       read:
@@ -35,7 +35,7 @@ parts:
     build-packages:
       - jq
     stage-packages:
-      - dotnet-runtime-9.0
+      - dotnet-runtime-10.0
     override-stage: |
       craftctl default
 
@@ -57,8 +57,8 @@ parts:
     after:
       - dotnet-runtime
     override-build: |
-      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 9.0)
-
+      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 10.0)
+      
       for file in mounts/*; do
         sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
         sed -i "s/{SNAP}/$SNAPCRAFT_PROJECT_NAME/g" $file

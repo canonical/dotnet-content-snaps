@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-sdk
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/sdk/{SDK_VERSION}
+Where=/var/snap/dotnet/common/dotnet/sdk/{SDK_VERSION}
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-metadata
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/metadata/workloads/10.0.100
+Where=/var/snap/dotnet/common/dotnet/metadata/workloads/10.0.100
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

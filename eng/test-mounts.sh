@@ -20,11 +20,17 @@ file_to_workflow() {
 arch="$(dpkg --print-architecture)"
 mount_destination_path="/var/snap/dotnet/common/dotnet"
 file_comparison_params=()
+dotnet_version=""
 # We take the snap name as an input parameter
 for snap in "$@"; do
     if [[ "$snap" == "" ]]; then
         echo "Skipping empty parameter..."
         continue
+    fi
+
+    if [[ "$dotnet_version" == "" ]]; then
+        # Get the version of the first snap
+        dotnet_version="$(echo "$snap" | cut -d'-' -f3)"
     fi
 
     content_snap_path="/snap/$snap/current"
@@ -126,9 +132,25 @@ print_to_workflow "- $mount_destination_path"
 print_to_workflow "\`\`\`"
 
 file_comparer_output_file="$(mktemp)"
-python3 eng/file-comparer.py "${file_comparison_params[@]}" \
-    "$mount_destination_path" 2>&1 | tee "$file_comparer_output_file"
-comparer_status=$?  # Capture the exit status of the file comparer
+ignore_file="eng/file-comparer-ignore-files/dotnet-${dotnet_version}.ignore"
+
+if [[ -f "$ignore_file" ]]; then
+    print_to_workflow "### Using ignore file: $ignore_file"
+    print_to_workflow "\`\`\`"
+    file_to_workflow "$ignore_file"
+    print_to_workflow "\`\`\`"
+
+    python3 eng/file_comparer.py "${file_comparison_params[@]}" \
+        "$mount_destination_path" --ignore-file "$ignore_file" 2>&1 \
+        | tee "$file_comparer_output_file"
+    comparer_status=$?  # Capture the exit status of the file comparer
+else
+    python3 eng/file_comparer.py "${file_comparison_params[@]}" \
+        "$mount_destination_path" 2>&1 \
+        | tee "$file_comparer_output_file"
+    comparer_status=$?  # Capture the exit status of the file comparer
+fi
+
 set -e  # Re-enable 'set -e' for the rest of the script
 
 # Check if the file comparison failed

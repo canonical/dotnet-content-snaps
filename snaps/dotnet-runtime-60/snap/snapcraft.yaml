@@ -44,27 +44,24 @@ parts:
   dotnet-runtime:
     plugin: nil
     source: .
+    build-packages:
+      - jq
     stage-packages:
       - dotnet-runtime-6.0
     override-stage: |
       craftctl default
 
-      if [ "${CRAFT_ARCH_BUILD_FOR}" = "amd64" ]; then
-        DOTNET_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/x86_64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
-          grep NETCoreApp | head -n 1 | awk '{print $2}')
-      elif [ "${CRAFT_ARCH_BUILD_FOR}" = "arm64" ]; then
-        DOTNET_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/aarch64-linux-gnu ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
-          grep NETCoreApp | head -n 1 | awk '{print $2}')
-      else
-        echo "Unknown architecture (${CRAFT_ARCH_BUILD_FOR})"
-        exit 1
-      fi
+      DOTNET_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR} \
+        ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
+        | grep Microsoft.NETCore.App | head -n 1 | awk '{print $2}')
 
       if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
-        craftctl set version="${DOTNET_RUNTIME_VERSION}+git.$(cat ${CRAFT_PART_SRC}/GIT_SHA)"
-      else
-        craftctl set version="${DOTNET_RUNTIME_VERSION}"
+        jq -n --arg repo "https://github.com/canonical/dotnet-content-snaps" \
+          --arg commit "$(cat ${CRAFT_PART_SRC}/GIT_SHA)" \
+          '{repository: $repo, commit: $commit}' > ${CRAFT_PRIME}/release.json
       fi
+
+      craftctl set version="${DOTNET_RUNTIME_VERSION}"
     override-prime: |
       # This is for backwards compatibility:
       # Up until now, .NET Runtime content snaps would place the .NET directory hive
@@ -73,21 +70,22 @@ parts:
       # still where people might expect it to be.
       ln --symbolic usr/lib/dotnet/dotnet "${CRAFT_PRIME}"/dotnet
       craftctl default
-  
+
   mounts:
     plugin: dump
     source: .
-    after: 
+    after:
       - dotnet-runtime
     override-build: |
       RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 6.0)
-      
+
       for file in mounts/*; do
         sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
         sed -i "s/{SNAP}/$SNAPCRAFT_PROJECT_NAME/g" $file
         if [[ "$file" == *"{RUNTIME_VERSION}"* ]]; then
-          new_file=$(echo "$file" | sed "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/")
-          mv "$file" "$new_file"
+          where_path=$(cat $file | grep -e ^Where= | cut -d= -f2)
+          new_file=$(systemd-escape --path --suffix=mount $where_path)
+          mv "$file" "mounts/$new_file"
           echo "Renamed '$file' to '$new_file'"
         fi
       done

@@ -29,12 +29,13 @@ For each .NET major version being updated, find the corresponding GitHub Actions
 
 A single GitHub workflow will build all three content snaps for its own .NET major version, e.g. `build-dotnet-60` will build the `dotnet-runtime-60`, `aspnetcore-runtime-60`, and `dotnet-sdk-60` snaps.
 
-| .NET Version      | GH Actions Workflow                                                                                   |
-| ----------------- | ----------------------------------------------------------------------------------------------------- |
-| .NET 6            | [build-dotnet-60](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-60.yaml) |
-| .NET 7            | [build-dotnet-70](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-70.yaml) |
-| .NET 8            | [build-dotnet-80](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-80.yaml) |
-| .NET 9            | [build-dotnet-90](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-90.yaml) |
+| .NET Version      | GH Actions Workflow                                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------- |
+| .NET 6            | [build-dotnet-60](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-60.yaml)   |
+| .NET 7            | [build-dotnet-70](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-70.yaml)   |
+| .NET 8            | [build-dotnet-80](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-80.yaml)   |
+| .NET 9            | [build-dotnet-90](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-90.yaml)   |
+| .NET 10           | [build-dotnet-100](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-100.yaml) |
 
 Then, trigger the workflow manually by clicking on "Run Workflow".
 

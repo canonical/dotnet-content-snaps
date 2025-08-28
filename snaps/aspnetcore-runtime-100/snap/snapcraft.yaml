@@ -1,10 +1,10 @@
-name: dotnet-runtime-90
+name: aspnetcore-runtime-100
 base: core22
-adopt-info: dotnet-runtime
-summary: .NET 9.0 Runtime.
+adopt-info: aspnetcore-runtime
+summary: ASP.NET Core 10.0 Runtime.
 description: |
-  .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
-  .NET Core is a general purpose development platform maintained by Microsoft.
+  .NET runtimes and libraries which are optimized for running .NET apps in production. See https://dot.net/core.
+  .NET is a general purpose development platform maintained by Microsoft.
 
 grade: stable
 confinement: strict
@@ -21,27 +21,27 @@ architectures:
     build-for: [arm64]
 
 slots:
-  dotnet-runtime:
-    content: dotnet-runtime-90
+  aspnetcore-runtime:
+    content: aspnetcore-runtime-100
     interface: content
     source:
       read:
         - $SNAP/usr/lib/dotnet
 
 parts:
-  dotnet-runtime:
+  aspnetcore-runtime:
     plugin: nil
     source: .
     build-packages:
       - jq
     stage-packages:
-      - dotnet-runtime-9.0
+      - aspnetcore-runtime-10.0
     override-stage: |
       craftctl default
 
-      DOTNET_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR} \
+      ASPNETCORE_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR} \
         ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
-        | grep Microsoft.NETCore.App | head -n 1 | awk '{print $2}')
+        | grep Microsoft.AspNetCore.App | head -n 1 | awk '{print $2}')
 
       if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
         jq -n --arg repo "https://github.com/canonical/dotnet-content-snaps" \
@@ -49,15 +49,15 @@ parts:
           '{repository: $repo, commit: $commit}' > ${CRAFT_PRIME}/release.json
       fi
 
-      craftctl set version="${DOTNET_RUNTIME_VERSION}"
+      craftctl set version="${ASPNETCORE_RUNTIME_VERSION}"
 
   mounts:
     plugin: dump
     source: .
     after:
-      - dotnet-runtime
+      - aspnetcore-runtime
     override-build: |
-      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 9.0)
+      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.AspNetCore.App/ | grep 10.0)
 
       for file in mounts/*; do
         sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file

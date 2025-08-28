@@ -1,7 +1,7 @@
-name: dotnet-sdk-80
+name: dotnet-sdk-100
 base: core22
 adopt-info: dotnet-sdk
-summary: .NET 8 SDK
+summary: .NET 10 SDK
 description: |
   The .NET SDK is a set of libraries and tools that developers use to create
   .NET applications and libraries.
@@ -23,7 +23,7 @@ architectures:
 slots:
   dotnet-sdk:
     interface: content
-    content: dotnet-sdk-80
+    content: dotnet-sdk-100
     source:
       read:
         - $SNAP/usr/lib/dotnet
@@ -35,7 +35,8 @@ parts:
     build-packages:
       - jq
     stage-packages:
-      - dotnet-sdk-8.0
+      - dotnet-sdk-10.0
+      - dotnet-sdk-aot-10.0
     override-stage: |
       craftctl default
 
@@ -56,8 +57,8 @@ parts:
     after:
       - dotnet-sdk
     override-build: |
-      RUNTIME_VERSION=$(ls ${CRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 8.0)
-      SDK_VERSION=$(ls ${CRAFT_STAGE}/usr/lib/dotnet/sdk | grep 8.0)
+      RUNTIME_VERSION=$(ls ${CRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 10.0)
+      SDK_VERSION=$(ls ${CRAFT_STAGE}/usr/lib/dotnet/sdk | grep 10.0)
 
       if [ "${CRAFT_ARCH_BUILD_FOR}" = "amd64" ]; then
         ARCH="x64"
