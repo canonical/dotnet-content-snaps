@@ -1,0 +1,32 @@
+name: lint-scripts
+
+on:
+  push:
+    branches: main
+    paths:
+      - '**/*.py'
+      - '**/*.sh'
+  pull_request:
+    branches: main
+
+jobs:
+  flake8:
+    name: Run flake8 (python linter)
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout source code
+        uses: actions/checkout@v4
+      - name: install flake8
+        run: sudo apt install --update flake8
+      - name: run flake8
+        run: find . -type f -iname '*.py' -exec flake8 {} +
+  shellcheck:
+    name: Run shellcheck (shell linter)
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout source code
+        uses: actions/checkout@v4
+      - name: install shellcheck
+        run: sudo apt install --update shellcheck
+      - name: run shellcheck
+        run: find . -type f -iname '*.sh' -exec shellcheck {} +
