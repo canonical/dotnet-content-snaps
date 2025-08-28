@@ -35,4 +35,4 @@ jobs:
       publish-aspnetcore-runtime: false
       publish-dotnet-sdk: false
     secrets:
-      snap-store-token: ${{ secrets.SNAP_STORE_LOGIN }}
+      snap-store-token: ${{ secrets.DOTNET7_SNAP_STORE_LOGIN }}
