@@ -5,6 +5,10 @@ summary: .NET 9 SDK
 description: |
   The .NET SDK is a set of libraries and tools that developers use to create
   .NET applications and libraries.
+source-code:
+  - https://github.com/canonical/dotnet-content-snaps
+issues:
+  - https://github.com/canonical/dotnet-content-snaps/issues/new
 
 grade: stable
 confinement: strict

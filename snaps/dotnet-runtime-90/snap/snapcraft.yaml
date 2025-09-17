@@ -5,6 +5,10 @@ summary: .NET 9.0 Runtime.
 description: |
   .NET Core runtimes and libraries which are optimized for running .NET Core apps in production. See https://dot.net/core.
   .NET Core is a general purpose development platform maintained by Microsoft.
+source-code:
+  - https://github.com/canonical/dotnet-content-snaps
+issues:
+  - https://github.com/canonical/dotnet-content-snaps/issues/new
 
 grade: stable
 confinement: strict
