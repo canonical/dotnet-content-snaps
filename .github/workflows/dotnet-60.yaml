@@ -4,9 +4,9 @@ on:
   push:
     branches: main
     paths:
-      - dotnet-runtime-60/**
-      - aspnetcore-runtime-60/**
-      - dotnet-sdk-60/**
+      - snaps/dotnet-runtime-60/**
+      - snaps/aspnetcore-runtime-60/**
+      - snaps/dotnet-sdk-60/**
   pull_request:
     branches: main
   workflow_dispatch:
