@@ -4,6 +4,10 @@
 
 This repository tracks the snapcraft definitions for all Canonical .NET content snaps available in the Snap Store.
 
+## Compatibility
+
+All .NET content snaps in this repository contain binaries built on **Ubuntu 22.04 LTS (Jammy Jellyfish)**, which ships with **glibc 2.35**. This means these snaps are compatible with any Linux distribution that provides glibc version **2.35 or higher**.
+
 ## Available Content Snaps
 
 ### .NET Runtimes
