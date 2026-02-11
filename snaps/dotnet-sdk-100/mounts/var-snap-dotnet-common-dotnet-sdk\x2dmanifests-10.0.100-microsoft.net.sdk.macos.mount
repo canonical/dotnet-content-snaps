@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-sdk-manifests-microsoft.net.sdk.macos
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/sdk-manifests/10.0.100/microsoft.net.sdk.macos
+Where=/var/snap/dotnet/common/dotnet/sdk-manifests/10.0.100/microsoft.net.sdk.macos
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target
