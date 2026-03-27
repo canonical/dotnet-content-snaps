@@ -50,21 +50,21 @@ runs:
           DOTNET_SDK_SNAP_NAME=dotnet-sdk-${{ steps.check-version.outputs.dotnet-version }}
           echo "dotnet-sdk-snap-name=${DOTNET_SDK_SNAP_NAME}" >> "$GITHUB_OUTPUT"
         fi
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       id: download-dotnet-runtime
       if: ${{ inputs.dotnet-runtime == 'true' }}
       env:
         DOTNET_RUNTIME_SNAP_NAME: ${{ steps.derive-snap-name.outputs.dotnet-runtime-snap-name }}
       with:
         name: ${{ env.DOTNET_RUNTIME_SNAP_NAME }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       id: download-aspnetcore-runtime
       if: ${{ inputs.aspnetcore-runtime == 'true' }}
       env:
         ASPNETCORE_RUNTIME_SNAP_NAME: ${{ steps.derive-snap-name.outputs.aspnetcore-runtime-snap-name }}
       with:
         name: ${{ env.ASPNETCORE_RUNTIME_SNAP_NAME }}-${{ steps.get-arch.outputs.DPKG_ARCH }}
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       id: download-dotnet-sdk
       if: ${{ inputs.dotnet-sdk == 'true' }}
       env:

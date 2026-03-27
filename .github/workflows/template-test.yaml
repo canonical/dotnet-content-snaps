@@ -25,7 +25,7 @@ jobs:
           - [self-hosted, large, jammy, X64]
           - [self-hosted, large, jammy, ARM64]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         id: checkout
       - name: Test Content Snaps
         id: test

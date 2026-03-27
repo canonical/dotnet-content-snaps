@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: install flake8
         run: sudo apt install --update flake8
       - name: run flake8
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: install shellcheck
         run: sudo apt install --update shellcheck
       - name: run shellcheck

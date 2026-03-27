@@ -65,7 +65,7 @@ jobs:
         artifact: ${{ fromJson(needs.generate-matrix.outputs.artifacts) }}
         architecture: ${{ fromJson(needs.generate-matrix.outputs.architectures) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         id: checkout
       - name: Print matrix
         shell: bash

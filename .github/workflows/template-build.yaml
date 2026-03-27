@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     if: ${{ inputs.build-dotnet-runtime }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       id: checkout
     - name: Build .NET Runtime Content Snap
       uses: ./.github/actions/build-dotnet-content-snap
@@ -43,7 +43,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     if: ${{ inputs.build-aspnetcore-runtime }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       id: checkout
     - name: Build ASP.NET Core Runtime Content Snap
       uses: ./.github/actions/build-dotnet-content-snap
@@ -60,7 +60,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     if: ${{ inputs.build-dotnet-sdk }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       id: checkout
     - name: Build .NET SDK Content Snap
       uses: ./.github/actions/build-dotnet-content-snap
