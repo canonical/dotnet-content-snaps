@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-packs-runtime-rid
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/packs/Microsoft.NETCore.App.Runtime.ubuntu.22.04-{ARCH}/{RUNTIME_VERSION}
+Where=/var/snap/dotnet/common/dotnet/packs/Microsoft.NETCore.App.Runtime.ubuntu.22.04-{ARCH}/{RUNTIME_VERSION}
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

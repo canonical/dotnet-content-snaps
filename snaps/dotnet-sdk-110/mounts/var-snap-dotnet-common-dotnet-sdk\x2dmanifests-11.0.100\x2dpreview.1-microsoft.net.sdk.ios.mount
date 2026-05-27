@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-sdk-manifests-microsoft.net.sdk.ios
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/sdk-manifests/11.0.100-preview.1/microsoft.net.sdk.ios
+Where=/var/snap/dotnet/common/dotnet/sdk-manifests/11.0.100-preview.1/microsoft.net.sdk.ios
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-packs-runtime-rid
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/packs/runtime.ubuntu.22.04-{ARCH}.Microsoft.DotNet.ILCompiler/{RUNTIME_VERSION}
+Where=/var/snap/dotnet/common/dotnet/packs/runtime.ubuntu.22.04-{ARCH}.Microsoft.DotNet.ILCompiler/{RUNTIME_VERSION}
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

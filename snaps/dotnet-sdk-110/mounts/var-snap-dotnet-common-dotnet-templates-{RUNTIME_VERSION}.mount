@@ -1,0 +1,11 @@
+[Unit]
+Description={SNAP}-templates
+
+[Mount]
+What=/snap/{SNAP}/current/usr/lib/dotnet/templates/{RUNTIME_VERSION}
+Where=/var/snap/dotnet/common/dotnet/templates/{RUNTIME_VERSION}
+Type=none
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

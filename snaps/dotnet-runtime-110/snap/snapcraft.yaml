@@ -1,0 +1,86 @@
+name: dotnet-runtime-110
+base: core22
+adopt-info: dotnet-runtime
+summary: .NET 11.0 Runtime.
+description: |
+  .NET runtimes and libraries which are optimized for running .NET apps in production. See https://dot.net/core.
+  .NET is a general purpose development platform maintained by Microsoft.
+source-code:
+  - https://github.com/canonical/dotnet-content-snaps
+issues:
+  - https://github.com/canonical/dotnet-content-snaps/issues/new
+
+grade: stable
+confinement: strict
+
+package-repositories:
+ - type: apt
+   ppa: dotnet/snaps
+   priority: always
+
+architectures:
+  - build-on: [amd64]
+    build-for: [amd64]
+  - build-on: [arm64]
+    build-for: [arm64]
+
+slots:
+  dotnet-runtime:
+    content: dotnet-runtime-110
+    interface: content
+    source:
+      read:
+        - $SNAP/usr/lib/dotnet
+
+parts:
+  dotnet-runtime:
+    plugin: nil
+    source: .
+    build-packages:
+      - jq
+    stage-packages:
+      - dotnet-runtime-11.0
+    override-stage: |
+      craftctl default
+
+      DOTNET_RUNTIME_VERSION=$(LD_LIBRARY_PATH=${CRAFT_STAGE}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR} \
+        ${CRAFT_STAGE}/usr/lib/dotnet/dotnet --list-runtimes \
+        | grep Microsoft.NETCore.App | head -n 1 | awk '{print $2}')
+
+      if [ -f ${CRAFT_PART_SRC}/GIT_SHA ]; then
+        jq -n --arg repo "https://github.com/canonical/dotnet-content-snaps" \
+          --arg commit "$(cat ${CRAFT_PART_SRC}/GIT_SHA)" \
+          '{repository: $repo, commit: $commit}' > ${CRAFT_PRIME}/release.json
+      fi
+
+      craftctl set version="${DOTNET_RUNTIME_VERSION}"
+
+  mounts:
+    plugin: dump
+    source: .
+    after:
+      - dotnet-runtime
+    override-build: |
+      RUNTIME_VERSION=$(ls ${SNAPCRAFT_STAGE}/usr/lib/dotnet/shared/Microsoft.NETCore.App/ | grep 11.0)
+
+      for file in mounts/*; do
+        sed -i "s/{RUNTIME_VERSION}/$RUNTIME_VERSION/g" $file
+        sed -i "s/{SNAP}/$SNAPCRAFT_PROJECT_NAME/g" $file
+        if [[ "$file" == *"{RUNTIME_VERSION}"* ]]; then
+          where_path=$(cat $file | grep -e ^Where= | cut -d= -f2)
+          new_file=$(systemd-escape --path --suffix=mount $where_path)
+          mv "$file" "mounts/$new_file"
+          echo "Renamed '$file' to '$new_file'"
+        fi
+      done
+
+      craftctl default
+    prime:
+      - mounts/
+
+lint:
+  ignore:
+    - library:
+      - usr/lib/**/libicu*
+      - usr/lib/**/liblttng-ust-*
+      - usr/lib/**/libunwind-*
