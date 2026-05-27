@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+# Create $SNAP_COMMON if doesn't exist
+if [ ! -d "$SNAP_COMMON" ]; then
+    mkdir -p "$SNAP_COMMON"
+fi

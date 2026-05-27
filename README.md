@@ -1,6 +1,6 @@
 # .NET Content Snaps
 
-[![build-dotnet-60](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-60.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-60.yaml) [![build-dotnet-70](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-70.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-70.yaml) [![build-dotnet-80](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-80.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-80.yaml) [![build-dotnet-90](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-90.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-90.yaml) [![build-dotnet-100](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-100.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-100.yaml)
+[![build-dotnet-60](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-60.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-60.yaml) [![build-dotnet-70](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-70.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-70.yaml) [![build-dotnet-80](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-80.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-80.yaml) [![build-dotnet-90](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-90.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-90.yaml) [![build-dotnet-100](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-100.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-100.yaml) [![build-dotnet-110](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-110.yaml/badge.svg)](https://github.com/canonical/dotnet-content-snaps/actions/workflows/dotnet-110.yaml)
 
 This repository tracks the snapcraft definitions for all Canonical .NET content snaps available in the Snap Store.
 
@@ -22,6 +22,7 @@ All .NET content snaps in this repository contain binaries built on **Ubuntu 22.
 | dotnet-runtime-80 | 2026-11-10 :white_check_mark: | [![dotnet-runtime-80 in the Snap Store](https://snapcraft.io/dotnet-runtime-80/badge.svg)](https://snapcraft.io/dotnet-runtime-80) |
 | dotnet-runtime-90 | 2026-11-10 :white_check_mark: | [![dotnet-runtime-90 in the Snap Store](https://snapcraft.io/dotnet-runtime-90/badge.svg)](https://snapcraft.io/dotnet-runtime-90) |
 | dotnet-runtime-100 | 2028-11-14 :white_check_mark: | [![dotnet-runtime-100 in the Snap Store](https://snapcraft.io/dotnet-runtime-100/badge.svg)](https://snapcraft.io/dotnet-runtime-100) |
+| dotnet-runtime-110 | N/A :question: | [![dotnet-runtime-110 in the Snap Store](https://snapcraft.io/dotnet-runtime-110/badge.svg)](https://snapcraft.io/dotnet-runtime-110) |
 
 ### ASP.NET Core Runtimes
 
@@ -31,6 +32,7 @@ All .NET content snaps in this repository contain binaries built on **Ubuntu 22.
 | aspnetcore-runtime-80 | 2026-11-10 :white_check_mark: | [![aspnetcore-runtime-80 in the Snap Store](https://snapcraft.io/aspnetcore-runtime-80/badge.svg)](https://snapcraft.io/aspnetcore-runtime-80) |
 | aspnetcore-runtime-90 | 2026-11-10 :white_check_mark: | [![aspnetcore-runtime-90 in the Snap Store](https://snapcraft.io/aspnetcore-runtime-90/badge.svg)](https://snapcraft.io/aspnetcore-runtime-90) |
 | aspnetcore-runtime-100 | 2028-11-14 :white_check_mark: | [![aspnetcore-runtime-100 in the Snap Store](https://snapcraft.io/aspnetcore-runtime-100/badge.svg)](https://snapcraft.io/aspnetcore-runtime-100) |
+| aspnetcore-runtime-110 | N/A :question: | [![aspnetcore-runtime-110 in the Snap Store](https://snapcraft.io/aspnetcore-runtime-110/badge.svg)](https://snapcraft.io/aspnetcore-runtime-110) |
 
 ### SDKs
 
@@ -40,3 +42,4 @@ All .NET content snaps in this repository contain binaries built on **Ubuntu 22.
 | dotnet-sdk-80     | 2026-11-10 :white_check_mark: | [![dotnet-sdk-80 in the Snap Store](https://snapcraft.io/dotnet-sdk-80/badge.svg)](https://snapcraft.io/dotnet-sdk-80) |
 | dotnet-sdk-90     | 2026-11-10 :white_check_mark: | [![dotnet-sdk-90 in the Snap Store](https://snapcraft.io/dotnet-sdk-90/badge.svg)](https://snapcraft.io/dotnet-sdk-90) |
 | dotnet-sdk-100     | 2028-11-14 :white_check_mark: | [![dotnet-sdk-100 in the Snap Store](https://snapcraft.io/dotnet-sdk-100/badge.svg)](https://snapcraft.io/dotnet-sdk-100) |
+| dotnet-sdk-110     | N/A :question: | [![dotnet-sdk-110 in the Snap Store](https://snapcraft.io/dotnet-sdk-110/badge.svg)](https://snapcraft.io/dotnet-sdk-110) |

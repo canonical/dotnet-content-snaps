@@ -1,0 +1,3 @@
+# NuGet packages not included due to clash in directory structure
+library-packs/Microsoft.DotNet.ILCompiler.*.nupkg
+library-packs/Microsoft.NET.ILLink.Tasks.*.nupkg
