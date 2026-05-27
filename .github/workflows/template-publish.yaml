@@ -64,6 +64,7 @@ jobs:
       matrix:
         artifact: ${{ fromJson(needs.generate-matrix.outputs.artifacts) }}
         architecture: ${{ fromJson(needs.generate-matrix.outputs.architectures) }}
+      fail-fast: false
     steps:
       - uses: actions/checkout@v6
         id: checkout
